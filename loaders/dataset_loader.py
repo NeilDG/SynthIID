@@ -85,8 +85,9 @@ def load_paired_train_dataset(a_path, b_path):
     for i in range(0, network_config["dataset_repeats"]): #TEMP: formerly 0-1
         b_list += b_list_dup
 
-    random.shuffle(a_list)
-    random.shuffle(b_list)
+    temp_list = list(zip(a_list, b_list))
+    random.shuffle(temp_list)
+    a_list, b_list = zip(*temp_list)
 
     img_length = len(a_list)
     print("Length of images: %d %d"  % (img_length, len(b_list)))
@@ -108,8 +109,9 @@ def load_paired_test_dataset(a_path, b_path):
         a_list = a_list[0: global_config.img_to_load]
         b_list = b_list[0: global_config.img_to_load]
 
-    random.shuffle(a_list)
-    random.shuffle(b_list)
+    temp_list = list(zip(a_list, b_list))
+    random.shuffle(temp_list)
+    a_list, b_list = zip(*temp_list)
 
     img_length = len(a_list)
     print("Length of images: %d %d" % (img_length, len(b_list)))

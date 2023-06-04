@@ -41,20 +41,5 @@ class ConfigHolder():
         else:
             return 0.0
 
-    def get_sm_version_name(self):
-        network_version = global_config.sm_network_version
-        iteration = global_config.sm_iteration
-
-        return str(network_version) + "_" + str(iteration)
-
-    def get_ns_version_name(self):
-        network_version = global_config.ns_network_version
-        iteration = global_config.ns_iteration
-
-        return str(network_version) + "_" + str(iteration)
-
-    def get_st_version_name(self):
-        network_version = global_config.style_transfer_version
-        iteration = global_config.st_iteration
-
-        return str(network_version) + "_" + str(iteration)
+    def format_version_name(self, network_name, iteration):
+        return str(network_name) + "_" + str(iteration)

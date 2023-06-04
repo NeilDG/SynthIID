@@ -54,9 +54,7 @@ save_images = 0
 save_every_epoch = 5
 epoch_to_load = 0
 
-last_epoch_a = -1
-last_epoch_d = -1
-last_epoch_sh = -1
+last_epoch = 0
 
 
 
