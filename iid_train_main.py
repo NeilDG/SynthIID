@@ -17,6 +17,7 @@ from config import network_config
 import global_config
 from config.network_config import ConfigHolder
 from loaders import dataset_loader
+from trainers import paired_trainer
 from utils import plot_utils
 from tqdm import tqdm
 from tqdm.auto import trange
@@ -148,11 +149,11 @@ def train_albedo(device, opts):
     global_config.test_size = 8
 
     iteration = 0
-    start_epoch = global_config.last_epoch_a
+    start_epoch = global_config.last_epoch
     print("---------------------------------------------------------------------------")
     print("Started Training loop for mode: albedo", " Set start epoch: ", start_epoch)
     print("Network config: ", network_config)
-    print("General config: ", global_config.albedo_network_version, global_config.a_iteration, global_config.img_to_load, global_config.load_size, global_config.batch_size, global_config.train_mode, global_config.last_epoch_a)
+    print("General config: ", global_config.albedo_network_version, global_config.a_iteration, global_config.img_to_load, global_config.load_size, global_config.batch_size, global_config.train_mode, global_config.last_epoch)
     print("---------------------------------------------------------------------------")
 
     dataset_version = network_config["dataset_version"]
@@ -173,6 +174,8 @@ def train_albedo(device, opts):
     pbar = tqdm(total=needed_progress, disable=global_config.disable_progress_bar)
     pbar.update(current_progress)
 
+    tf = paired_trainer.PairedTrainer(device, global_config.albedo_network_version, global_config.a_iteration)
+
     for epoch in range(start_epoch, network_config["max_epochs"]):
         for i, (train_data, test_data) in enumerate(zip(train_loader, itertools.cycle(test_loader))):
             _, rgb_ns, albedo = train_data
@@ -184,8 +187,22 @@ def train_albedo(device, opts):
             albedo_test = albedo_test.to(device)
 
             input_map = {"rgb_train" : rgb_ns, "albedo_train" : albedo, "rgb_test" : rgb_ns_test, "albedo_test" : albedo_test}
+            tf.train(epoch, iteration, input_map, "rgb_train", "albedo_train", "rgb_test", "albedo_test")
+
             iteration = iteration + 1
             pbar.update(1)
+
+            if (iteration % opts.save_per_iter == 0):
+                tf.save_states(epoch, iteration, True)
+
+                if(global_config.plot_enabled == 1):
+                    tf.visdom_plot(iteration)
+                    tf.visdom_visualize(input_map, "rgb_train", "albedo_train", "Train")
+                    tf.visdom_visualize(input_map, "rgb_test", "albedo_test", "Test")
+
+        tf.save_states(epoch, iteration, True)
+
+    pbar.close()
 
 def main(argv):
     (opts, args) = parser.parse_args(argv)
@@ -196,6 +213,8 @@ def main(argv):
     random.seed(manualSeed)
     torch.manual_seed(manualSeed)
     np.random.seed(manualSeed)
+
+    plot_utils.VisdomReporter.initialize()
 
     prepare_training()
     train_albedo(device, opts)
