@@ -41,7 +41,6 @@ class PairedTrainer(abstract_iid_trainer.AbstractIIDTrainer):
         self.G_A2B, self.D_B = network_creator.initialize_img2img_network()
 
         patch_size = config_holder.get_network_attribute("patch_size", 64)
-        self.transform_op = transform_operations.Img2ImgBasicTransform(patch_size).to(self.gpu_device)
 
         self.optimizerG = torch.optim.Adam(itertools.chain(self.G_A2B.parameters()), lr=network_config["g_lr"], weight_decay=network_config["weight_decay"])
         self.optimizerD = torch.optim.Adam(itertools.chain(self.D_B.parameters()), lr=network_config["d_lr"], weight_decay=network_config["weight_decay"])
@@ -102,8 +101,6 @@ class PairedTrainer(abstract_iid_trainer.AbstractIIDTrainer):
     def train(self, epoch, iteration, input_map, a_key, b_key, a_key_test, b_key_test):
         input_tensor = input_map[a_key]
         target_tensor = input_map[b_key]
-        input_tensor = self.transform_op(input_tensor)
-        target_tensor = self.transform_op(target_tensor)
 
         accum_batch_size = self.load_size * iteration
 
@@ -182,10 +179,6 @@ class PairedTrainer(abstract_iid_trainer.AbstractIIDTrainer):
         img_a = input_map[a_key]
         img_b = input_map[b_key]
 
-        if(label == "Train"):
-            img_a = self.transform_op(img_a)
-            img_b = self.transform_op(img_b)
-
         a2b = self.test(input_map, a_key)
 
         self.visdom_reporter.plot_image(img_a, str(label) + " A Images - " + self.NETWORK_VERSION + str(self.iteration))
@@ -241,3 +234,21 @@ class PairedTrainer(abstract_iid_trainer.AbstractIIDTrainer):
 
             torch.save(save_dict, network_file_name)
             print("Saved best model state. Epoch: %d. Name: %s. Best metric: %f" % (epoch, network_file_name, best_metric))
+
+    def load_best_state(self):
+        network_file_name = self.BEST_NETWORK_SAVE_PATH + self.NETWORK_VERSION + "_best" + ".pth"
+        try:
+            checkpoint = torch.load(network_file_name, map_location=self.gpu_device)
+            self.best_tracker = best_tracker.BestTracker(early_stopper.EarlyStopperMethod.L1_TYPE)
+            self.best_tracker.load_best_state(network_file_name)
+        except:
+            checkpoint = None
+            print("No best checkpoint found. ", network_file_name)
+
+        if (checkpoint != None):
+            global_config.last_epoch = checkpoint["epoch"]
+            self.G_A2B.load_state_dict(checkpoint[global_config.GENERATOR_KEY])
+            self.D_B.load_state_dict(checkpoint[global_config.DISCRIMINATOR_KEY])
+
+            print("Loaded best paired img2img network: ", self.NETWORK_CHECKPATH, "Epoch: ", checkpoint["epoch"],
+                  " Best metric: ", self.best_tracker.get_best_metric())
