@@ -96,7 +96,8 @@ def load_paired_train_dataset(a_path, b_path):
     data_loader = torch.utils.data.DataLoader(
         image_datasets.PairedImageDataset(a_list, b_list, 1),
         batch_size=global_config.load_size,
-        num_workers=num_workers
+        num_workers=num_workers,
+        shuffle=False
     )
 
     return data_loader, img_length
@@ -117,12 +118,32 @@ def load_paired_test_dataset(a_path, b_path):
     print("Length of images: %d %d" % (img_length, len(b_list)))
 
     data_loader = torch.utils.data.DataLoader(
-        image_datasets.PairedImageDataset(a_list, b_list, 1),
+        image_datasets.PairedImageDataset(a_list, b_list, 2),
         batch_size=global_config.test_size,
-        num_workers=1
+        num_workers=1,
+        shuffle=False
     )
 
     return data_loader, img_length
+
+def load_cgintrinsics_test_dataset():
+    rgb_list = glob.glob(global_config.CGINTRINSICS_PATH + "images/*.png")
+
+    if (global_config.img_to_load > 0):
+        rgb_list = rgb_list[0: global_config.img_to_load]
+
+    img_length = len(rgb_list)
+    print("Length of images: %d" % (img_length))
+
+    data_loader = torch.utils.data.DataLoader(
+        image_datasets.CGIntrinsicsDataset(rgb_list),
+        batch_size=global_config.test_size,
+        num_workers=1,
+        shuffle=False
+    )
+
+    return data_loader, img_length
+
 
 def load_singleimg_dataset(a_path):
     a_list = glob.glob(a_path)

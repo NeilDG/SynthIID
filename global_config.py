@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
 
-DATASET_PLACES_PATH = "E:/Places Dataset/"
+DATASET_PLACES_PATH = "X:/Places Dataset/"
+CGINTRINSICS_PATH = "X:/CGIntrinsics/rendered/"
+GTA_IID_PATH = "X:/GTA-IID/"
+
 TEST_IMAGE_SIZE = (256, 256)
 
 #========================================================================#

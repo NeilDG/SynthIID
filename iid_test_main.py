@@ -2,25 +2,19 @@ import itertools
 import sys
 from optparse import OptionParser
 import random
-from pathlib import Path
-
 import torch
 import torch.nn.parallel
 import torch.utils.data
-import torchvision.utils as vutils
 import numpy as np
-import matplotlib.pyplot as plt
 import yaml
 from yaml import SafeLoader
 
-from config import network_config
 import global_config
 from config.network_config import ConfigHolder
 from loaders import dataset_loader
-from trainers import paired_trainer
+from testers import paired_tester
 from utils import plot_utils
 from tqdm import tqdm
-from tqdm.auto import trange
 
 parser = OptionParser()
 parser.add_option('--server_config', type=int, help="Is running on COARE?", default=0)
@@ -29,7 +23,7 @@ parser.add_option('--img_to_load', type=int, help="Image to load?", default=-1)
 parser.add_option('--plot_enabled', type=int, help="Min epochs", default=1)
 parser.add_option('--network_version', type=str, default="VXX.XX")
 parser.add_option('--iteration', type=int, default=1)
-parser.add_option('--save_per_iter', type=int, default=500)
+parser.add_option('--load_best', type=int, default=0)
 
 def update_config(opts):
     global_config.server_config = opts.server_config
@@ -120,17 +114,7 @@ def update_config(opts):
         global_config.shading_dir = "X:/SynthV3_Raw/{dataset_version}/shading/*.*"
         print("Using HOME RTX3090 configuration. Workers: ", global_config.num_workers)
 
-def prepare_training():
-    BEST_NETWORK_SAVE_PATH = "./checkpoint/best/"
-    try:
-        path = Path(BEST_NETWORK_SAVE_PATH)
-        path.mkdir(parents=True)
-    except OSError as error:
-        print(BEST_NETWORK_SAVE_PATH + " already exists. Skipping.", error)
-
-def train_albedo(device, opts):
-    print("Train albedo proper")
-
+def test_albedo(device, opts):
     yaml_config = "./hyperparam_tables/albedo/{network_version}.yaml"
     yaml_config = yaml_config.format(network_version=opts.network_version)
     hyperparam_path = "./hyperparam_tables/common_iter.yaml"
@@ -139,18 +123,17 @@ def train_albedo(device, opts):
 
     update_config(opts)
     print(opts)
-    print("=====================BEGIN - TRAIN ALBEDO============================")
+    print("=====================BEGIN - TEST ALBEDO============================")
     print("Server config? %d Has GPU available? %d Count: %d" % (global_config.server_config, torch.cuda.is_available(), torch.cuda.device_count()))
     print("Torch CUDA version: %s" % torch.version.cuda)
 
     network_config = ConfigHolder.getInstance().get_network_config()
     global_config.albedo_network_version = opts.network_version
     global_config.a_iteration = opts.iteration
-    global_config.test_size = 8
+    global_config.test_size = 64
 
-    tf = paired_trainer.PairedTrainer(device, global_config.albedo_network_version, global_config.a_iteration)
+    tester = paired_tester.PairedTester(device, global_config.albedo_network_version, global_config.a_iteration)
 
-    iteration = 0
     start_epoch = global_config.last_epoch
     print("---------------------------------------------------------------------------")
     print("Started Training loop for mode: albedo", " Set start epoch: ", start_epoch)
@@ -169,43 +152,73 @@ def train_albedo(device, opts):
     gta_rgb_path = global_config.GTA_IID_PATH + "gta_trainfinal.webp/*/*.webp"
     gta_albedo_path = global_config.GTA_IID_PATH + "gta_trainalbedo.webp/*/*.webp"
 
-    train_loader, dataset_count = dataset_loader.load_paired_train_dataset(global_config.rgb_dir_ns, global_config.albedo_dir)
-    # test_loader, _ = dataset_loader.load_paired_test_dataset(gta_rgb_path, gta_albedo_path)
-    test_loader, _ = dataset_loader.load_cgintrinsics_test_dataset()
-
+    test_loader_input, dataset_count = dataset_loader.load_paired_test_dataset(global_config.rgb_dir_ns, global_config.albedo_dir)
     # compute total progress
-    max_epochs = network_config["max_epochs"]
-    needed_progress = int(max_epochs * (dataset_count / global_config.load_size))
-    current_progress = int(start_epoch * (dataset_count / global_config.load_size))
+    needed_progress = int(dataset_count / global_config.test_size)
+    current_progress = 0
     pbar = tqdm(total=needed_progress, disable=global_config.disable_progress_bar)
     pbar.update(current_progress)
 
-    for epoch in range(start_epoch, network_config["max_epochs"]):
-        for i, (train_data, test_data) in enumerate(zip(train_loader, itertools.cycle(test_loader))):
-            _, rgb_ns, albedo = train_data
-            rgb_ns = rgb_ns.to(device)
-            albedo = albedo.to(device)
+    # print("============MEASURING ON TRAIN DATASET=================")
+    # for i, (_, rgb_ns, albedo) in enumerate(test_loader_input):
+    #     rgb_ns = rgb_ns.to(device)
+    #     albedo = albedo.to(device)
+    #
+    #     input_map = {"rgb_test" : rgb_ns, "albedo_test" : albedo}
+    #     tester.measure_and_store(input_map, "rgb_test", "albedo_test")
+    #
+    #     if(i % 50 == 0):
+    #         tester.visualize_results(input_map, "rgb_test", "albedo_test", "Train")
+    #
+    #     pbar.update(1)
+    #
+    # tester.report_metrics("Train")
+    # pbar.close()
+    #
+    # print("============MEASURING ON GTA-IID DATASET=================")
+    # test_loader_gta, dataset_count = dataset_loader.load_paired_test_dataset(gta_rgb_path, gta_albedo_path)
+    #
+    # # compute total progress
+    # needed_progress = int(dataset_count / global_config.test_size)
+    # current_progress = 0
+    # pbar = tqdm(total=needed_progress, disable=global_config.disable_progress_bar)
+    # pbar.update(current_progress)
+    #
+    # for i, (_, rgb_ns, albedo) in enumerate(test_loader_gta):
+    #     rgb_ns = rgb_ns.to(device)
+    #     albedo = albedo.to(device)
+    #
+    #     input_map = {"rgb_test": rgb_ns, "albedo_test": albedo}
+    #     tester.measure_and_store(input_map, "rgb_test", "albedo_test")
+    #     if (i % 50 == 0):
+    #         tester.visualize_results(input_map, "rgb_test", "albedo_test", "GTA-IID")
+    #
+    #     pbar.update(1)
+    #
+    # tester.report_metrics("GTA-IID")
+    # pbar.close()
 
-            _, rgb_ns_test, albedo_test, _ = test_data
-            rgb_ns_test = rgb_ns_test.to(device)
-            albedo_test = albedo_test.to(device)
+    print("============MEASURING ON CGINTRINSICS DATASET=================")
+    test_loader, dataset_count = dataset_loader.load_cgintrinsics_test_dataset()
 
-            input_map = {"rgb_train" : rgb_ns, "albedo_train" : albedo, "rgb_test" : rgb_ns_test, "albedo_test" : albedo_test}
-            tf.train(epoch, iteration, input_map, "rgb_train", "albedo_train", "rgb_test", "albedo_test")
+    # compute total progress
+    needed_progress = int(dataset_count / global_config.test_size)
+    current_progress = 0
+    pbar = tqdm(total=needed_progress, disable=global_config.disable_progress_bar)
+    pbar.update(current_progress)
 
-            if (iteration % opts.save_per_iter == 0):
-                tf.save_states(epoch, iteration, True)
+    for i, (_, rgb_ns, albedo, mask) in enumerate(test_loader):
+        rgb_ns = rgb_ns.to(device)
+        albedo = albedo.to(device)
 
-                if(global_config.plot_enabled == 1):
-                    tf.visdom_plot(iteration)
-                    tf.visdom_visualize(input_map, "rgb_train", "albedo_train", "Train")
-                    tf.visdom_visualize(input_map, "rgb_test", "albedo_test", "Test")
+        input_map = {"rgb_test": rgb_ns, "albedo_test": albedo}
+        tester.measure_and_store(input_map, "rgb_test", "albedo_test")
+        if (i % 50 == 0):
+            tester.visualize_results(input_map, "rgb_test", "albedo_test", "CGI")
 
-            iteration = iteration + 1
-            pbar.update(1)
+        pbar.update(1)
 
-        tf.save_states(epoch, iteration, True)
-
+    tester.report_metrics("CGI")
     pbar.close()
 
 def main(argv):
@@ -220,8 +233,7 @@ def main(argv):
 
     plot_utils.VisdomReporter.initialize()
 
-    prepare_training()
-    train_albedo(device, opts)
+    test_albedo(device, opts)
 
 if __name__ == "__main__":
     main(sys.argv)
