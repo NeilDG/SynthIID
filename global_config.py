@@ -28,16 +28,19 @@ disable_progress_bar = False
 server_config = -1
 num_workers = -1
 
-albedo_dir = "X:/SynthV3_Raw/{dataset_version}/albedo/"
 rgb_dir_ws = ""
 rgb_dir_ns = ""
+albedo_dir = ""
 depth_dir = ""
 shading_dir = ""
+normal_dir = ""
 
 depth_network_version = "VXX.XX"
 d_iteration = -1
 albedo_network_version = "VXX.XX"
 a_iteration = -1
+normal_network_version = "VXX.XX"
+n_iteration = -1
 shading_network_version = "VXX.XX"
 sh_iteration = -1
 shadowmap_network_version = "VXX.XX"

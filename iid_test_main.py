@@ -159,44 +159,44 @@ def test_albedo(device, opts):
     pbar = tqdm(total=needed_progress, disable=global_config.disable_progress_bar)
     pbar.update(current_progress)
 
-    # print("============MEASURING ON TRAIN DATASET=================")
-    # for i, (_, rgb_ns, albedo) in enumerate(test_loader_input):
-    #     rgb_ns = rgb_ns.to(device)
-    #     albedo = albedo.to(device)
-    #
-    #     input_map = {"rgb_test" : rgb_ns, "albedo_test" : albedo}
-    #     tester.measure_and_store(input_map, "rgb_test", "albedo_test")
-    #
-    #     if(i % 50 == 0):
-    #         tester.visualize_results(input_map, "rgb_test", "albedo_test", "Train")
-    #
-    #     pbar.update(1)
-    #
-    # tester.report_metrics("Train")
-    # pbar.close()
-    #
-    # print("============MEASURING ON GTA-IID DATASET=================")
-    # test_loader_gta, dataset_count = dataset_loader.load_paired_test_dataset(gta_rgb_path, gta_albedo_path)
-    #
-    # # compute total progress
-    # needed_progress = int(dataset_count / global_config.test_size)
-    # current_progress = 0
-    # pbar = tqdm(total=needed_progress, disable=global_config.disable_progress_bar)
-    # pbar.update(current_progress)
-    #
-    # for i, (_, rgb_ns, albedo) in enumerate(test_loader_gta):
-    #     rgb_ns = rgb_ns.to(device)
-    #     albedo = albedo.to(device)
-    #
-    #     input_map = {"rgb_test": rgb_ns, "albedo_test": albedo}
-    #     tester.measure_and_store(input_map, "rgb_test", "albedo_test")
-    #     if (i % 50 == 0):
-    #         tester.visualize_results(input_map, "rgb_test", "albedo_test", "GTA-IID")
-    #
-    #     pbar.update(1)
-    #
-    # tester.report_metrics("GTA-IID")
-    # pbar.close()
+    print("============MEASURING ON TRAIN DATASET=================")
+    for i, (_, rgb_ns, albedo) in enumerate(test_loader_input):
+        rgb_ns = rgb_ns.to(device)
+        albedo = albedo.to(device)
+
+        input_map = {"rgb_test" : rgb_ns, "albedo_test" : albedo}
+        tester.measure_and_store(input_map, "rgb_test", "albedo_test")
+
+        if(i % 50 == 0):
+            tester.visualize_results(input_map, "rgb_test", "albedo_test", "Train")
+
+        pbar.update(1)
+
+    tester.report_metrics("Train")
+    pbar.close()
+
+    print("============MEASURING ON GTA-IID DATASET=================")
+    test_loader_gta, dataset_count = dataset_loader.load_paired_test_dataset(gta_rgb_path, gta_albedo_path)
+
+    # compute total progress
+    needed_progress = int(dataset_count / global_config.test_size)
+    current_progress = 0
+    pbar = tqdm(total=needed_progress, disable=global_config.disable_progress_bar)
+    pbar.update(current_progress)
+
+    for i, (_, rgb_ns, albedo) in enumerate(test_loader_gta):
+        rgb_ns = rgb_ns.to(device)
+        albedo = albedo.to(device)
+
+        input_map = {"rgb_test": rgb_ns, "albedo_test": albedo}
+        tester.measure_and_store(input_map, "rgb_test", "albedo_test")
+        if (i % 50 == 0):
+            tester.visualize_results(input_map, "rgb_test", "albedo_test", "GTA-IID")
+
+        pbar.update(1)
+
+    tester.report_metrics("GTA-IID")
+    pbar.close()
 
     print("============MEASURING ON CGINTRINSICS DATASET=================")
     test_loader, dataset_count = dataset_loader.load_cgintrinsics_test_dataset()

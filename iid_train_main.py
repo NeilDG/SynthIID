@@ -118,6 +118,7 @@ def update_config(opts):
         global_config.albedo_dir = "X:/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "X:/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "X:/SynthV3_Raw/{dataset_version}/shading/*.*"
+        global_config.normal_dir = "X:/SynthV3_Raw/{dataset_version}/normal/*.*"
         print("Using HOME RTX3090 configuration. Workers: ", global_config.num_workers)
 
 def prepare_training():
@@ -129,8 +130,6 @@ def prepare_training():
         print(BEST_NETWORK_SAVE_PATH + " already exists. Skipping.", error)
 
 def train_albedo(device, opts):
-    print("Train albedo proper")
-
     yaml_config = "./hyperparam_tables/albedo/{network_version}.yaml"
     yaml_config = yaml_config.format(network_version=opts.network_version)
     hyperparam_path = "./hyperparam_tables/common_iter.yaml"
@@ -208,6 +207,80 @@ def train_albedo(device, opts):
 
     pbar.close()
 
+def train_normal(device, opts):
+    yaml_config = "./hyperparam_tables/normal/{network_version}.yaml"
+    yaml_config = yaml_config.format(network_version=opts.network_version)
+    hyperparam_path = "./hyperparam_tables/common_iter.yaml"
+    with open(yaml_config) as f, open(hyperparam_path) as h:
+        ConfigHolder.initialize(yaml.load(f, SafeLoader), yaml.load(h, SafeLoader))
+
+    update_config(opts)
+    print(opts)
+    print("=====================BEGIN - TRAIN NORMAL============================")
+    print("Server config? %d Has GPU available? %d Count: %d" % (global_config.server_config, torch.cuda.is_available(), torch.cuda.device_count()))
+    print("Torch CUDA version: %s" % torch.version.cuda)
+
+    network_config = ConfigHolder.getInstance().get_network_config()
+    global_config.normal_network_version = opts.network_version
+    global_config.n_iteration = opts.iteration
+    global_config.test_size = 8
+
+    tf = paired_trainer.PairedTrainer(device, global_config.normal_network_version, global_config.n_iteration)
+
+    iteration = 0
+    start_epoch = global_config.last_epoch
+    print("---------------------------------------------------------------------------")
+    print("Started Training loop for mode: normal", " Set start epoch: ", start_epoch)
+    print("Network config: ", network_config)
+    print("General config: ", global_config.normal_network_version, global_config.n_iteration, global_config.img_to_load, global_config.load_size, global_config.batch_size, global_config.train_mode, global_config.last_epoch)
+    print("---------------------------------------------------------------------------")
+
+    dataset_version = network_config["dataset_version"]
+    global_config.rgb_dir_ws = global_config.rgb_dir_ws.format(dataset_version=dataset_version)
+    global_config.rgb_dir_ns = global_config.rgb_dir_ns.format(dataset_version=dataset_version)
+    global_config.normal_dir = global_config.normal_dir.format(dataset_version=dataset_version)
+    print("Dataset path WS: ", global_config.rgb_dir_ws)
+    print("Dataset path NS: ", global_config.rgb_dir_ns)
+    print("Dataset normal: ", global_config.normal_dir)
+
+    train_loader, dataset_count = dataset_loader.load_paired_train_dataset(global_config.rgb_dir_ns, global_config.normal_dir)
+    test_loader, _ = dataset_loader.load_paired_test_dataset(global_config.rgb_dir_ns, global_config.normal_dir)
+
+    # compute total progress
+    max_epochs = network_config["max_epochs"]
+    needed_progress = int(max_epochs * (dataset_count / global_config.load_size))
+    current_progress = int(start_epoch * (dataset_count / global_config.load_size))
+    pbar = tqdm(total=needed_progress, disable=global_config.disable_progress_bar)
+    pbar.update(current_progress)
+
+    for epoch in range(start_epoch, network_config["max_epochs"]):
+        for i, (train_data, test_data) in enumerate(zip(train_loader, itertools.cycle(test_loader))):
+            _, rgb_ns, target = train_data
+            rgb_ns = rgb_ns.to(device)
+            target = target.to(device)
+
+            _, rgb_ns_test, target_test = test_data
+            rgb_ns_test = rgb_ns_test.to(device)
+            target_test = target_test.to(device)
+
+            input_map = {"rgb_train": rgb_ns, "target_train": target, "rgb_test": rgb_ns_test, "target_test": target_test}
+            tf.train(epoch, iteration, input_map, "rgb_train", "target_train", "rgb_test", "target_test")
+
+            if (iteration % opts.save_per_iter == 0):
+                tf.save_states(epoch, iteration, True)
+
+                if (global_config.plot_enabled == 1):
+                    tf.visdom_plot(iteration)
+                    tf.visdom_visualize(input_map, "rgb_train", "target_train", "Train")
+                    tf.visdom_visualize(input_map, "rgb_test", "target_test", "Test")
+
+            iteration = iteration + 1
+            pbar.update(1)
+
+        tf.save_states(epoch, iteration, True)
+
+    pbar.close()
+
 def main(argv):
     (opts, args) = parser.parse_args(argv)
     device = torch.device(opts.cuda_device if (torch.cuda.is_available()) else "cpu")
@@ -219,9 +292,12 @@ def main(argv):
     np.random.seed(manualSeed)
 
     plot_utils.VisdomReporter.initialize()
-
     prepare_training()
-    train_albedo(device, opts)
+
+    if("albedo" in opts.network_version):
+        train_albedo(device, opts)
+    elif("normal" in opts.network_version):
+        train_normal(device, opts)
 
 if __name__ == "__main__":
     main(sys.argv)
