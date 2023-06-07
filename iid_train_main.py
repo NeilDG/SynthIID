@@ -25,7 +25,6 @@ from tqdm.auto import trange
 parser = OptionParser()
 parser.add_option('--server_config', type=int, help="Is running on COARE?", default=0)
 parser.add_option('--cuda_device', type=str, help="CUDA Device?", default="cuda:0")
-parser.add_option('--img_to_load', type=int, help="Image to load?", default=-1)
 parser.add_option('--plot_enabled', type=int, help="Min epochs", default=1)
 parser.add_option('--network_version', type=str, default="VXX.XX")
 parser.add_option('--iteration', type=int, default=1)
@@ -34,7 +33,6 @@ parser.add_option('--save_per_iter', type=int, default=500)
 def update_config(opts):
     global_config.server_config = opts.server_config
     global_config.plot_enabled = opts.plot_enabled
-    global_config.img_to_load = opts.img_to_load
 
     config_holder = ConfigHolder.getInstance()
     network_config = config_holder.get_network_config()
@@ -145,6 +143,7 @@ def train_albedo(device, opts):
     network_config = ConfigHolder.getInstance().get_network_config()
     global_config.albedo_network_version = opts.network_version
     global_config.a_iteration = opts.iteration
+    global_config.img_to_load = ConfigHolder.getInstance().get_network_attribute("img_to_load", -1)
     global_config.test_size = 8
 
     tf = paired_trainer.PairedTrainer(device, global_config.albedo_network_version, global_config.a_iteration)

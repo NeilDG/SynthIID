@@ -3,11 +3,11 @@
 clear
 
 //For directories
-cd scratch3/NeuralNets-Experiment5-V01.XX.XX
+cd scratch3/SynthIID-V01.XX.XX
 cd scratch3/Visdom
 unzip "scratch2/SynthWeather Dataset 10.zip"
 
-git clone -b "workspace/V01.XX.XX" "https://github.com/NeilDG/NeuralNets-Experiment5.git" "scratch3/NeuralNets-Experiment5-V01.XX.XX"
+git clone -b "workspace/V01.XX.XX" "https://github.com/NeilDG/SynthIID.git" "scratch3/SynthIID-V01.XX.XX"
 rm -rf "/scratch1/scratch2/neil.delgallego/NeuralNets-GenerativeExperiment-V01.XX.XX"
 rm -rf "/scratch1/scratch2/neil.delgallego/SynthV3_Raw/"
 rm -rf "/scratch1/scratch2/neil.delgallego/SynthWeather Dataset 10/"
@@ -25,7 +25,7 @@ sbatch slurm_visdom_test.slurm
 sbatch visdom_run.slurm
 sbatch -w saliksik-cpu-23 visdom_run.slurm
 sbatch -w saliksik-cpu-23 --dependency=afterany:335892 visdom_run.slurm
-sbatch --dependency=afterany:448375 script_debug.slurm "depth_v01.15" 1
+sbatch --dependency=afterany:465816 script_debug.slurm "depth_v01.15" 1
 
 sbatch script_debug.slurm "depth_v01.15" 1
 sbatch slurm_download.sh

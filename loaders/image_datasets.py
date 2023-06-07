@@ -61,9 +61,9 @@ class PairedImageDataset(data.Dataset):
         state = torch.get_rng_state()
         a_img = self.initial_op(a_img)
 
-        torch.set_rng_state(state)
         b_img = cv2.imread(self.b_list[(idx % len(self.b_list))])
         b_img = cv2.cvtColor(b_img, cv2.COLOR_BGR2RGB)
+        torch.set_rng_state(state)
         b_img = self.initial_op(b_img)
 
         if(self.use_tanh):
