@@ -127,7 +127,7 @@ def load_paired_test_dataset(a_path, b_path):
     return data_loader, img_length
 
 def load_cgintrinsics_test_dataset():
-    rgb_list = glob.glob(global_config.CGINTRINSICS_PATH + "images/*.png")
+    rgb_list = glob.glob(global_config.cg_intrinsics_dir + "images/*.png")
 
     if (global_config.img_to_load > 0):
         rgb_list = rgb_list[0: global_config.img_to_load]
