@@ -9,7 +9,7 @@ unzip "scratch2/SynthWeather Dataset 10.zip"
 
 git clone -b "workspace/V01.XX.XX" "https://github.com/NeilDG/SynthIID.git" "scratch3/SynthIID-V01.XX.XX"
 rm -rf "/scratch1/scratch2/neil.delgallego/NeuralNets-GenerativeExperiment-V01.XX.XX"
-rm -rf "/scratch1/scratch2/neil.delgallego/SynthV3_Raw/"
+rm -rf "/scratch3/neil.delgallego/SynthV3_Raw/v06_iid_base/"
 rm -rf "/scratch1/scratch2/neil.delgallego/SynthWeather Dataset 10/"
 
 gdown https://drive.google.com/uc?id=1B6erEfeB2_n_KYP5GtCQU-DHGE1bKEVE --o "scratch2/SynthWeather Dataset 10/"
@@ -50,7 +50,7 @@ clear
 //Check all
 squeue -a
 squeue -u neil.delgallego
-squeue -w "saliksik-gpu-01, saliksik-gpu-02, saliksik-gpu-03, saliksik-gpu-04, saliksik-gpu-05, saliksik-gpu-06"
+squeue -w "saliksik-gpu-01, saliksik-gpu-02, saliksik-gpu-03, saliksik-gpu-04, saliksik-gpu-05, saliksik-gpu-06, saliksik-gpu-09, saliksik-gpu-10"
 //For cancelling job
 scancel <jobid>
 
