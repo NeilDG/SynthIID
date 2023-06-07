@@ -2,7 +2,6 @@
 import os
 
 DATASET_PLACES_PATH = "X:/Places Dataset/"
-CGINTRINSICS_PATH = "X:/CGIntrinsics/rendered/"
 GTA_IID_PATH = "X:/GTA-IID/"
 
 TEST_IMAGE_SIZE = (256, 256)
@@ -34,6 +33,7 @@ albedo_dir = ""
 depth_dir = ""
 shading_dir = ""
 normal_dir = ""
+cg_intrinsics_dir = "X:/CGIntrinsics/rendered/"
 
 depth_network_version = "VXX.XX"
 d_iteration = -1

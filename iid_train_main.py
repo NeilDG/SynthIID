@@ -76,6 +76,7 @@ def update_config(opts):
         global_config.albedo_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/shading/*.*"
+        global_config.cg_intrinsics_dir = "X:/CGIntrinsics/rendered/"
 
         print("Using HOME RTX2080Ti configuration. Workers: ", global_config.num_workers)
 
@@ -117,6 +118,7 @@ def update_config(opts):
         global_config.depth_dir = "X:/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "X:/SynthV3_Raw/{dataset_version}/shading/*.*"
         global_config.normal_dir = "X:/SynthV3_Raw/{dataset_version}/normal/*.*"
+        global_config.cg_intrinsics_dir = "X:/CGIntrinsics/rendered/"
         print("Using HOME RTX3090 configuration. Workers: ", global_config.num_workers)
 
 def prepare_training():

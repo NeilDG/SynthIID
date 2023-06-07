@@ -116,8 +116,8 @@ class SingleImageDataset(data.Dataset):
 class CGIntrinsicsDataset(data.Dataset):
     def __init__(self, rgb_list):
         self.rgb_list = rgb_list
-        self.albedo_dir = global_config.CGINTRINSICS_PATH + "albedo/"
-        self.mask_dir = global_config.CGINTRINSICS_PATH + "mask/"
+        self.albedo_dir = global_config.cg_intrinsics_dir + "albedo/"
+        self.mask_dir = global_config.cg_intrinsics_dir + "mask/"
 
         self.initial_op = transforms.Compose([
             transforms.ToPILImage(),
