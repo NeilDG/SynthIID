@@ -12,7 +12,7 @@ def train_albedo():
 
 def test_albedo():
     os.system("python \"iid_test_main.py\" --server_config=5 --img_to_load=1000 "
-              "--plot_enabled=1 --network_version=\"rgb2albedo_v01.02_iid\" --iteration=1")
+              "--img_vis_enabled=1 --network_version=\"rgb2albedo_v01.06_iid\" --iteration=1")
 
 def train_normal():
     os.system("python \"iid_train_main.py\" --server_config=5 --img_to_load=-1 "

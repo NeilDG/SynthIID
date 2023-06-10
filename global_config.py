@@ -21,6 +21,7 @@ DEPTH_VERSION = "rgb2depth_v1.00"
 LAST_METRIC_KEY = "last_metric"
 
 plot_enabled = 1
+img_vis_enabled = 1
 early_stop_threshold = 500
 disable_progress_bar = False
 

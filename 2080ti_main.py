@@ -6,6 +6,12 @@ def train_albedo():
     os.system("python \"iid_train_main.py\" --server_config=2 "
               "--plot_enabled=0 --save_per_iter=500 --network_version=\"rgb2albedo_v01.05_iid\" --iteration=1")
 
+    os.system("python \"iid_train_main.py\" --server_config=2 "
+              "--plot_enabled=0 --save_per_iter=500 --network_version=\"rgb2albedo_v01.03_iid\" --iteration=1")
+
+    os.system("python \"iid_train_main.py\" --server_config=2 "
+              "--plot_enabled=0 --save_per_iter=500 --network_version=\"rgb2albedo_v01.04_iid\" --iteration=1")
+
     # FOR TESTING
     # os.system("python \"iid_train_main.py\" --server_config=5 "
     #           "--plot_enabled=1 --save_per_iter=10 --network_version=\"rgb2albedo_v01.02_iid\" --iteration=1")

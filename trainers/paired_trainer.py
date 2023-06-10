@@ -182,8 +182,8 @@ class PairedTrainer(abstract_iid_trainer.AbstractIIDTrainer):
         a2b = self.test(input_map, a_key)
 
         self.visdom_reporter.plot_image(img_a, str(label) + " A Images - " + self.NETWORK_VERSION + str(self.iteration))
-        self.visdom_reporter.plot_image(img_b, str(label) + " B Images - " + self.NETWORK_VERSION + str(self.iteration))
         self.visdom_reporter.plot_image(a2b, str(label) + " B-Like Images - " + self.NETWORK_VERSION + str(self.iteration))
+        self.visdom_reporter.plot_image(img_b, str(label) + " B Images - " + self.NETWORK_VERSION + str(self.iteration))
 
     def load_saved_state(self):
         try:
@@ -246,7 +246,6 @@ class PairedTrainer(abstract_iid_trainer.AbstractIIDTrainer):
             print("No best checkpoint found. ", network_file_name)
 
         if (checkpoint != None):
-            global_config.last_epoch = checkpoint["epoch"]
             self.G_A2B.load_state_dict(checkpoint[global_config.GENERATOR_KEY])
             self.D_B.load_state_dict(checkpoint[global_config.DISCRIMINATOR_KEY])
 

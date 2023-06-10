@@ -21,6 +21,7 @@ parser.add_option('--server_config', type=int, help="Is running on COARE?", defa
 parser.add_option('--cuda_device', type=str, help="CUDA Device?", default="cuda:0")
 parser.add_option('--img_to_load', type=int, help="Image to load?", default=-1)
 parser.add_option('--plot_enabled', type=int, help="Min epochs", default=1)
+parser.add_option('--img_vis_enabled', type=int, default=1)
 parser.add_option('--network_version', type=str, default="VXX.XX")
 parser.add_option('--iteration', type=int, default=1)
 parser.add_option('--load_best', type=int, default=0)
@@ -28,6 +29,7 @@ parser.add_option('--load_best', type=int, default=0)
 def update_config(opts):
     global_config.server_config = opts.server_config
     global_config.plot_enabled = opts.plot_enabled
+    global_config.img_vis_enabled = opts.img_vis_enabled
     global_config.img_to_load = opts.img_to_load
 
     config_holder = ConfigHolder.getInstance()
@@ -167,7 +169,7 @@ def test_albedo(device, opts):
         input_map = {"rgb_test" : rgb_ns, "albedo_test" : albedo}
         tester.measure_and_store(input_map, "rgb_test", "albedo_test")
 
-        if(i % 50 == 0):
+        if(i % 50 == 0 and global_config.img_vis_enabled == 1):
             tester.visualize_results(input_map, "rgb_test", "albedo_test", "Train")
 
         pbar.update(1)
@@ -190,7 +192,7 @@ def test_albedo(device, opts):
 
         input_map = {"rgb_test": rgb_ns, "albedo_test": albedo}
         tester.measure_and_store(input_map, "rgb_test", "albedo_test")
-        if (i % 50 == 0):
+        if (i % 50 == 0 and global_config.img_vis_enabled == 1):
             tester.visualize_results(input_map, "rgb_test", "albedo_test", "GTA-IID")
 
         pbar.update(1)
@@ -213,7 +215,7 @@ def test_albedo(device, opts):
 
         input_map = {"rgb_test": rgb_ns, "albedo_test": albedo}
         tester.measure_and_store(input_map, "rgb_test", "albedo_test")
-        if (i % 50 == 0):
+        if (i % 50 == 0 and global_config.img_vis_enabled == 1):
             tester.visualize_results(input_map, "rgb_test", "albedo_test", "CGI")
 
         pbar.update(1)
