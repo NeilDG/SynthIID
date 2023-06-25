@@ -120,7 +120,7 @@ def load_paired_test_dataset(a_path, b_path):
     data_loader = torch.utils.data.DataLoader(
         image_datasets.PairedImageDataset(a_list, b_list, 2),
         batch_size=global_config.test_size,
-        num_workers=1,
+        num_workers=global_config.num_test_workers,
         shuffle=False
     )
 

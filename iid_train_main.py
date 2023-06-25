@@ -169,7 +169,7 @@ def train_albedo(device, opts):
     gta_rgb_path = global_config.GTA_IID_PATH + "gta_trainfinal.webp/*/*.webp"
     gta_albedo_path = global_config.GTA_IID_PATH + "gta_trainalbedo.webp/*/*.webp"
 
-    train_loader, dataset_count = dataset_loader.load_paired_train_dataset(global_config.rgb_dir_ns, global_config.albedo_dir)
+    train_loader, dataset_count = dataset_loader.load_paired_train_dataset(global_config.rgb_dir_ws, global_config.albedo_dir)
     # test_loader, _ = dataset_loader.load_paired_test_dataset(gta_rgb_path, gta_albedo_path)
     test_loader, _ = dataset_loader.load_cgintrinsics_test_dataset()
 

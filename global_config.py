@@ -27,6 +27,7 @@ disable_progress_bar = False
 
 server_config = -1
 num_workers = -1
+num_test_workers = -1
 
 rgb_dir_ws = ""
 rgb_dir_ns = ""
