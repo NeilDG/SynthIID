@@ -33,6 +33,7 @@ parser.add_option('--save_per_iter', type=int, default=500)
 def update_config(opts):
     global_config.server_config = opts.server_config
     global_config.plot_enabled = opts.plot_enabled
+    global_config.num_test_workers = 1
 
     config_holder = ConfigHolder.getInstance()
     network_config = config_holder.get_network_config()
