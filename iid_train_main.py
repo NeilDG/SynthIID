@@ -52,6 +52,7 @@ def update_config(opts):
         global_config.albedo_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/shading/*.*"
+        global_config.normal_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/normal/*.*"
 
     # CCS JUPYTER
     elif (global_config.server_config == 1):
@@ -64,6 +65,7 @@ def update_config(opts):
         global_config.albedo_dir = "/home/jupyter-neil.delgallego/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "/home/jupyter-neil.delgallego/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "/home/jupyter-neil.delgallego/SynthV3_Raw/{dataset_version}/shading/*.*"
+        global_config.normal_dir = "/home/jupyter-neil.delgallego/SynthV3_Raw/{dataset_version}/normal/*.*"
 
         print("Using CCS configuration. Workers: ", global_config.num_workers)
 
@@ -77,6 +79,8 @@ def update_config(opts):
         global_config.albedo_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/shading/*.*"
+        global_config.normal_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/normal/*.*"
+
         global_config.cg_intrinsics_dir = "X:/Datasets/CGIntrinsics/rendered/"
 
         print("Using HOME RTX2080Ti configuration. Workers: ", global_config.num_workers)
@@ -90,6 +94,7 @@ def update_config(opts):
         global_config.rgb_dir_ns = "/home/neildelgallego/SynthV3_Raw/{dataset_version}/rgb_noshadows/*.*"
         global_config.albedo_dir = "/home/neildelgallego/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "/home/neildelgallego/SynthV3_Raw/{dataset_version}/depth/*.*"
+        global_config.normal_dir = "/home/neildelgallego/SynthV3_Raw/{dataset_version}/normal/*.*"
         global_config.shading_dir = "/home/neildelgallego/SynthV3_Raw/{dataset_version}/shading/*.*"
 
         print("Using TITAN configuration. Workers: ", global_config.num_workers)
@@ -108,6 +113,7 @@ def update_config(opts):
         global_config.albedo_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/shading/*.*"
+        global_config.normal_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/normal/*.*"
     else:
         global_config.num_workers = 12
         global_config.load_size = network_config["load_size"][0]
