@@ -19,9 +19,9 @@ def plot_test():
 
 def train_normal():
     os.system("python3 \"iid_train_main.py\" --server_config=3 --plot_enabled=0 --save_per_iter=1000 "
-              "--network_version=\"rgb2normal_v01.02_iid\" --iteration=1")
-    os.system("python3 \"iid_train_main.py\" --server_config=3 --plot_enabled=0 --save_per_iter=1000 "
               "--network_version=\"rgb2normal_v01.03_iid\" --iteration=1")
+    os.system("python3 \"iid_train_main.py\" --server_config=3 --plot_enabled=0 --save_per_iter=1000 "
+              "--network_version=\"rgb2normal_v01.02_iid\" --iteration=1")
     os.system("python3 \"iid_train_main.py\" --server_config=3 --plot_enabled=0 --save_per_iter=1000 "
               "--network_version=\"rgb2normal_v01.04_iid\" --iteration=1")
     os.system("python3 \"iid_train_main.py\" --server_config=3 --plot_enabled=0 --save_per_iter=1000 "

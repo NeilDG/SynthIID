@@ -115,7 +115,7 @@ def load_paired_test_dataset(a_path, b_path):
     a_list, b_list = zip(*temp_list)
 
     img_length = len(a_list)
-    print("Length of images: %d %d" % (img_length, len(b_list)))
+    print("Length of test images: %d %d" % (img_length, len(b_list)))
 
     data_loader = torch.utils.data.DataLoader(
         image_datasets.PairedImageDataset(a_list, b_list, 2),
