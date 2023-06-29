@@ -18,11 +18,23 @@ def main(argv):
     else:
         output_dir = "/home/jupyter-neil.delgallego/SynthV3_Raw/"
 
-    # z00
-    direct_link = "https://drive.google.com/file/d/1mCCeIKNhqgrxjtXy50VswQ29dbZQ96oZ/view?usp=drive_link"
-    id = direct_link.split("/d/")[1].split("/")[0]
-    url = "https://drive.google.com/uc?id="+id
-    gdown.download(url, output=output_dir, use_cookies=False)
+    # v06_iid_base
+    url = "https://drive.google.com/drive/folders/1mCTQAh_sVFO3UtYXwlYm8_UGTTEwJ_XE?usp=sharing"
+    gdown.download_folder(url, output=output_dir, use_cookies=False)
+
+    # v07_iid_base
+    # url = "https://drive.google.com/drive/folders/1mGu-BYkBTTZKx52Es3u8ztgIjA8KiiSU?usp=sharing"
+    # gdown.download_folder(url, output=output_dir, use_cookies=False)
+
+    # v08_iid_base
+    # url = "https://drive.google.com/drive/folders/1mnr806Vw8YqaCKuQGerAboEsz6rO9fgI?usp=sharing"
+    # gdown.download_folder(url, output=output_dir, use_cookies=False)
+
+    # v89_istd
+    # direct_link = "https://drive.google.com/file/d/1mlDSgKT_TZKSqpt6taETHKaOVHpGzRuy/view?usp=sharing"
+    # id = direct_link.split("/d/")[1].split("/")[0]
+    # url = "https://drive.google.com/uc?id=" + id
+    # gdown.download(url, output=output_dir, use_cookies=False, quiet=False)
 
 if __name__ == "__main__":
     main(sys.argv)

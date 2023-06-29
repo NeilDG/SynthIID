@@ -39,11 +39,11 @@ class VisdomReporter:
         self.loss_windows = {}
         self.text_windows = {}
     
-    def plot_image(self, img_tensor, caption, normalize = True):
+    def plot_image(self, img_tensor, caption, normalize = True, nrows = 8, ncolumns = 16):
         if(global_config.plot_enabled == 0):
             return
 
-        img_group = vutils.make_grid(img_tensor[:16], nrow = 8, padding=2, normalize=normalize).cpu()
+        img_group = vutils.make_grid(img_tensor[:ncolumns], nrow = nrows, padding=2, normalize=normalize).cpu()
         if hash(caption) not in self.image_windows:
             self.image_windows[hash(caption)] = self.vis.images(img_group, opts = dict(caption = caption))
         else:

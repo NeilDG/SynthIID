@@ -115,19 +115,19 @@ def load_paired_test_dataset(a_path, b_path):
     a_list, b_list = zip(*temp_list)
 
     img_length = len(a_list)
-    print("Length of images: %d %d" % (img_length, len(b_list)))
+    print("Length of test images: %d %d" % (img_length, len(b_list)))
 
     data_loader = torch.utils.data.DataLoader(
         image_datasets.PairedImageDataset(a_list, b_list, 2),
         batch_size=global_config.test_size,
-        num_workers=1,
+        num_workers=global_config.num_test_workers,
         shuffle=False
     )
 
     return data_loader, img_length
 
 def load_cgintrinsics_test_dataset():
-    rgb_list = glob.glob(global_config.CGINTRINSICS_PATH + "images/*.png")
+    rgb_list = glob.glob(global_config.cg_intrinsics_dir + "images/*.png")
 
     if (global_config.img_to_load > 0):
         rgb_list = rgb_list[0: global_config.img_to_load]

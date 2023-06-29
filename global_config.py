@@ -2,7 +2,6 @@
 import os
 
 DATASET_PLACES_PATH = "X:/Places Dataset/"
-CGINTRINSICS_PATH = "X:/CGIntrinsics/rendered/"
 GTA_IID_PATH = "X:/GTA-IID/"
 
 TEST_IMAGE_SIZE = (256, 256)
@@ -22,11 +21,13 @@ DEPTH_VERSION = "rgb2depth_v1.00"
 LAST_METRIC_KEY = "last_metric"
 
 plot_enabled = 1
+img_vis_enabled = 1
 early_stop_threshold = 500
 disable_progress_bar = False
 
 server_config = -1
 num_workers = -1
+num_test_workers = -1
 
 rgb_dir_ws = ""
 rgb_dir_ns = ""
@@ -34,6 +35,7 @@ albedo_dir = ""
 depth_dir = ""
 shading_dir = ""
 normal_dir = ""
+cg_intrinsics_dir = "X:/CGIntrinsics/rendered/"
 
 depth_network_version = "VXX.XX"
 d_iteration = -1

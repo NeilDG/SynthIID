@@ -25,7 +25,6 @@ from tqdm.auto import trange
 parser = OptionParser()
 parser.add_option('--server_config', type=int, help="Is running on COARE?", default=0)
 parser.add_option('--cuda_device', type=str, help="CUDA Device?", default="cuda:0")
-parser.add_option('--img_to_load', type=int, help="Image to load?", default=-1)
 parser.add_option('--plot_enabled', type=int, help="Min epochs", default=1)
 parser.add_option('--network_version', type=str, default="VXX.XX")
 parser.add_option('--iteration', type=int, default=1)
@@ -34,7 +33,7 @@ parser.add_option('--save_per_iter', type=int, default=500)
 def update_config(opts):
     global_config.server_config = opts.server_config
     global_config.plot_enabled = opts.plot_enabled
-    global_config.img_to_load = opts.img_to_load
+    global_config.num_test_workers = 1
 
     config_holder = ConfigHolder.getInstance()
     network_config = config_holder.get_network_config()
@@ -53,6 +52,7 @@ def update_config(opts):
         global_config.albedo_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/shading/*.*"
+        global_config.normal_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/normal/*.*"
 
     # CCS JUPYTER
     elif (global_config.server_config == 1):
@@ -65,6 +65,7 @@ def update_config(opts):
         global_config.albedo_dir = "/home/jupyter-neil.delgallego/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "/home/jupyter-neil.delgallego/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "/home/jupyter-neil.delgallego/SynthV3_Raw/{dataset_version}/shading/*.*"
+        global_config.normal_dir = "/home/jupyter-neil.delgallego/SynthV3_Raw/{dataset_version}/normal/*.*"
 
         print("Using CCS configuration. Workers: ", global_config.num_workers)
 
@@ -78,6 +79,9 @@ def update_config(opts):
         global_config.albedo_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/shading/*.*"
+        global_config.normal_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/normal/*.*"
+
+        global_config.cg_intrinsics_dir = "X:/Datasets/CGIntrinsics/rendered/"
 
         print("Using HOME RTX2080Ti configuration. Workers: ", global_config.num_workers)
 
@@ -90,6 +94,7 @@ def update_config(opts):
         global_config.rgb_dir_ns = "/home/neildelgallego/SynthV3_Raw/{dataset_version}/rgb_noshadows/*.*"
         global_config.albedo_dir = "/home/neildelgallego/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "/home/neildelgallego/SynthV3_Raw/{dataset_version}/depth/*.*"
+        global_config.normal_dir = "/home/neildelgallego/SynthV3_Raw/{dataset_version}/normal/*.*"
         global_config.shading_dir = "/home/neildelgallego/SynthV3_Raw/{dataset_version}/shading/*.*"
 
         print("Using TITAN configuration. Workers: ", global_config.num_workers)
@@ -108,6 +113,7 @@ def update_config(opts):
         global_config.albedo_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/shading/*.*"
+        global_config.normal_dir = "/scratch3/neil.delgallego/SynthV3_Raw/{dataset_version}/normal/*.*"
     else:
         global_config.num_workers = 12
         global_config.load_size = network_config["load_size"][0]
@@ -119,6 +125,7 @@ def update_config(opts):
         global_config.depth_dir = "X:/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "X:/SynthV3_Raw/{dataset_version}/shading/*.*"
         global_config.normal_dir = "X:/SynthV3_Raw/{dataset_version}/normal/*.*"
+        global_config.cg_intrinsics_dir = "X:/CGIntrinsics/rendered/"
         print("Using HOME RTX3090 configuration. Workers: ", global_config.num_workers)
 
 def prepare_training():
@@ -145,6 +152,7 @@ def train_albedo(device, opts):
     network_config = ConfigHolder.getInstance().get_network_config()
     global_config.albedo_network_version = opts.network_version
     global_config.a_iteration = opts.iteration
+    global_config.img_to_load = ConfigHolder.getInstance().get_network_attribute("img_to_load", -1)
     global_config.test_size = 8
 
     tf = paired_trainer.PairedTrainer(device, global_config.albedo_network_version, global_config.a_iteration)
@@ -168,7 +176,7 @@ def train_albedo(device, opts):
     gta_rgb_path = global_config.GTA_IID_PATH + "gta_trainfinal.webp/*/*.webp"
     gta_albedo_path = global_config.GTA_IID_PATH + "gta_trainalbedo.webp/*/*.webp"
 
-    train_loader, dataset_count = dataset_loader.load_paired_train_dataset(global_config.rgb_dir_ns, global_config.albedo_dir)
+    train_loader, dataset_count = dataset_loader.load_paired_train_dataset(global_config.rgb_dir_ws, global_config.albedo_dir)
     # test_loader, _ = dataset_loader.load_paired_test_dataset(gta_rgb_path, gta_albedo_path)
     test_loader, _ = dataset_loader.load_cgintrinsics_test_dataset()
 
