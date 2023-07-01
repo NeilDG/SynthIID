@@ -25,6 +25,7 @@ parser.add_option('--img_vis_enabled', type=int, default=1)
 parser.add_option('--network_version', type=str, default="VXX.XX")
 parser.add_option('--iteration', type=int, default=1)
 parser.add_option('--load_best', type=int, default=0)
+parser.add_option('--test_mode', type=str, default="albedo")
 
 def update_config(opts):
     global_config.server_config = opts.server_config
@@ -114,6 +115,7 @@ def update_config(opts):
         global_config.albedo_dir = "X:/SynthV3_Raw/{dataset_version}/albedo/*.*"
         global_config.depth_dir = "X:/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "X:/SynthV3_Raw/{dataset_version}/shading/*.*"
+        global_config.normal_dir = "X:/SynthV3_Raw/{dataset_version}/normal/*.*"
         print("Using HOME RTX3090 configuration. Workers: ", global_config.num_workers)
 
 def test_albedo(device, opts):
@@ -223,6 +225,65 @@ def test_albedo(device, opts):
     tester.report_metrics("CGI")
     pbar.close()
 
+def test_normal(device, opts):
+    yaml_config = "./hyperparam_tables/normal/{network_version}.yaml"
+    yaml_config = yaml_config.format(network_version=opts.network_version)
+    hyperparam_path = "./hyperparam_tables/common_iter.yaml"
+    with open(yaml_config) as f, open(hyperparam_path) as h:
+        ConfigHolder.initialize(yaml.load(f, SafeLoader), yaml.load(h, SafeLoader))
+
+    update_config(opts)
+    print(opts)
+    print("=====================BEGIN - TEST NORMAL============================")
+    print("Server config? %d Has GPU available? %d Count: %d" % (global_config.server_config, torch.cuda.is_available(), torch.cuda.device_count()))
+    print("Torch CUDA version: %s" % torch.version.cuda)
+
+    network_config = ConfigHolder.getInstance().get_network_config()
+    global_config.normal_network_version = opts.network_version
+    global_config.n_iteration = opts.iteration
+    global_config.test_size = 64
+    global_config.num_test_workers = 2
+
+    tester = paired_tester.PairedTester(device, global_config.normal_network_version, global_config.n_iteration)
+
+    start_epoch = global_config.last_epoch
+    print("---------------------------------------------------------------------------")
+    print("Started Training loop for mode: normal", " Set start epoch: ", start_epoch)
+    print("Network config: ", network_config)
+    print("General config: ", global_config.albedo_network_version, global_config.n_iteration, global_config.img_to_load, global_config.load_size, global_config.batch_size, global_config.train_mode, global_config.last_epoch)
+    print("---------------------------------------------------------------------------")
+
+    dataset_version = network_config["dataset_version"]
+    global_config.rgb_dir_ws = global_config.rgb_dir_ws.format(dataset_version=dataset_version)
+    global_config.rgb_dir_ns = global_config.rgb_dir_ns.format(dataset_version=dataset_version)
+    global_config.normal_dir = global_config.normal_dir.format(dataset_version=dataset_version)
+    print("Dataset path WS: ", global_config.rgb_dir_ws)
+    print("Dataset path NS: ", global_config.rgb_dir_ns)
+    print("Dataset normal: ", global_config.normal_dir)
+
+    test_loader_input, dataset_count = dataset_loader.load_paired_test_dataset(global_config.rgb_dir_ns, global_config.normal_dir)
+    # compute total progress
+    needed_progress = int(dataset_count / global_config.test_size)
+    current_progress = 0
+    pbar = tqdm(total=needed_progress, disable=global_config.disable_progress_bar)
+    pbar.update(current_progress)
+
+    print("============MEASURING ON TRAIN DATASET=================")
+    for i, (_, rgb_ns, target) in enumerate(test_loader_input):
+        rgb_ns = rgb_ns.to(device)
+        target = target.to(device)
+
+        input_map = {"rgb_test" : rgb_ns, "target_test" : target}
+        tester.measure_and_store(input_map, "rgb_test", "target_test")
+
+        if(i % 50 == 0 and global_config.img_vis_enabled == 1):
+            tester.visualize_results(input_map, "rgb_test", "target_test", "Train-Normal")
+
+        pbar.update(1)
+
+    tester.report_metrics("Train-Normal")
+    pbar.close()
+
 def main(argv):
     (opts, args) = parser.parse_args(argv)
     device = torch.device(opts.cuda_device if (torch.cuda.is_available()) else "cpu")
@@ -235,7 +296,10 @@ def main(argv):
 
     plot_utils.VisdomReporter.initialize()
 
-    test_albedo(device, opts)
+    if(opts.test_mode == "albedo"):
+        test_albedo(device, opts)
+    elif(opts.test_mode == "normal"):
+        test_normal(device, opts)
 
 if __name__ == "__main__":
     main(sys.argv)
