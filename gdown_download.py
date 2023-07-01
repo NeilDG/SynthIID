@@ -19,8 +19,8 @@ def main(argv):
         output_dir = "/home/jupyter-neil.delgallego/SynthV3_Raw/"
 
     # v06_iid_base
-    url = "https://drive.google.com/drive/folders/1mCTQAh_sVFO3UtYXwlYm8_UGTTEwJ_XE?usp=sharing"
-    gdown.download_folder(url, output=output_dir, use_cookies=False)
+    # url = "https://drive.google.com/drive/folders/1mCTQAh_sVFO3UtYXwlYm8_UGTTEwJ_XE?usp=sharing"
+    # gdown.download_folder(url, output=output_dir, use_cookies=False)
 
     # v07_iid_base
     url = "https://drive.google.com/drive/folders/1mGu-BYkBTTZKx52Es3u8ztgIjA8KiiSU?usp=sharing"

@@ -85,7 +85,7 @@ unzip "./SynthV3_Raw/v07_iid_base/v07_iid.zip" -d "./SynthV3_Raw/"
 rm -rf "NeuralNets-Experiment5-V01.XX.XX"
 rm -rf "NeuralNets-GenerativeExperiment-V60.XX.XX"
 rm -rf "Places Dataset"
-rm -rf "SynthV3_Raw/v07_iid/"
+rm -rf "SynthV3_Raw/v07_iid_base/"
 mkdir "SynthV3_Raw"
 
 
