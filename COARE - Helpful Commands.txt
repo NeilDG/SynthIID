@@ -7,7 +7,7 @@ cd scratch3/SynthIID-V01.XX.XX
 cd scratch3/Visdom
 unzip "scratch2/SynthWeather Dataset 10.zip"
 
-git clone -b "workspace/V01.XX.XX" "https://github.com/NeilDG/SynthIID.git" "scratch3/SynthIID-V01.XX.XX"
+git clone --depth 1 -b "workspace/V01.XX.XX" "https://github.com/NeilDG/SynthIID.git" "scratch3/SynthIID-V01.XX.XX"
 rm -rf "/scratch1/scratch2/neil.delgallego/NeuralNets-GenerativeExperiment-V01.XX.XX"
 rm -rf "/scratch3/neil.delgallego/SynthV3_Raw/v06_iid_base/"
 rm -rf "/scratch1/scratch2/neil.delgallego/SynthWeather Dataset 10/"
