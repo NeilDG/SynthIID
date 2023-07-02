@@ -21,7 +21,7 @@ def test_albedo():
               "--plot_enabled=1 --network_version=\"rgb2albedo_v01.02_iid\" --iteration=1")
 
 def train_normal():
-    os.system("python3 \"iid_train_main.py\" --server_config=2 --plot_enabled=0 --save_per_iter=1000 "
+    os.system("python \"iid_train_main.py\" --server_config=2 --plot_enabled=0 --save_per_iter=1000 "
               "--network_version=\"rgb2normal_v01.06_iid\" --iteration=1")
 
 def train_img2img():
