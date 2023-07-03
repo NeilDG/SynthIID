@@ -262,16 +262,15 @@ def train_normal(device, opts):
     pbar.update(current_progress)
 
     for epoch in range(start_epoch, network_config["max_epochs"]):
-        for i, (train_data, test_data) in enumerate(zip(train_loader, itertools.cycle(test_loader))):
-            _, rgb_ns, target = train_data
+        for i, (_, rgb_ns, target) in enumerate(train_loader, 0):
             rgb_ns = rgb_ns.to(device)
             target = target.to(device)
 
-            _, rgb_ns_test, target_test = test_data
-            rgb_ns_test = rgb_ns_test.to(device)
-            target_test = target_test.to(device)
+            # _, rgb_ns_test, target_test = test_data
+            # rgb_ns_test = rgb_ns_test.to(device)
+            # target_test = target_test.to(device)
 
-            input_map = {"rgb_train": rgb_ns, "target_train": target, "rgb_test": rgb_ns_test, "target_test": target_test}
+            input_map = {"rgb_train": rgb_ns, "target_train": target, "rgb_test": rgb_ns, "target_test": target}
             tf.train(epoch, iteration, input_map, "rgb_train", "target_train", "rgb_test", "target_test")
 
             if (iteration % opts.save_per_iter == 0):
