@@ -24,10 +24,10 @@ def train_normal():
               "--network_version=\"rgb2normal_v01.03_iid\" --iteration=1")
     os.system("python \"iid_train_main.py\" --server_config=5 --plot_enabled=0 --save_per_iter=1000 "
               "--network_version=\"rgb2normal_v01.02_iid\" --iteration=1")
-    os.system("python \"iid_train_main.py\" --server_config=5 --plot_enabled=0 --save_per_iter=1000 "
-              "--network_version=\"rgb2normal_v01.04_iid\" --iteration=1")
-    os.system("python \"iid_train_main.py\" --server_config=5 --plot_enabled=0 --save_per_iter=1000 "
-              "--network_version=\"rgb2normal_v01.05_iid\" --iteration=1")
+    # os.system("python \"iid_train_main.py\" --server_config=5 --plot_enabled=0 --save_per_iter=1000 "
+    #           "--network_version=\"rgb2normal_v01.04_iid\" --iteration=1")
+    # os.system("python \"iid_train_main.py\" --server_config=5 --plot_enabled=0 --save_per_iter=1000 "
+    #           "--network_version=\"rgb2normal_v01.05_iid\" --iteration=1")
     os.system("python \"iid_train_main.py\" --server_config=5 --plot_enabled=0 --save_per_iter=1000 "
               "--network_version=\"rgb2normal_v01.07_iid\" --iteration=1")
 

@@ -5,7 +5,10 @@ import time
 
 def train_proper(gpu_device):
     os.system("python \"iid_train_main.py\" --server_config=1 --cuda_device=" +gpu_device+ " --plot_enabled=0 --save_per_iter=1000 "
-              "--network_version=\"rgb2normal_v01.07_iid\" --iteration=1")
+              "--network_version=\"rgb2normal_v01.04_iid\" --iteration=1")
+
+    os.system("python \"iid_train_main.py\" --server_config=1 --cuda_device=" +gpu_device+ " --plot_enabled=0 --save_per_iter=1000 "
+              "--network_version=\"rgb2normal_v01.05_iid\" --iteration=1")
 
 
 def main():
