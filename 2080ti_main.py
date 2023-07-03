@@ -35,7 +35,7 @@ def main():
     train_normal()
 
     # train_img2img()
-    # os.system("shutdown /s /t 1")
+    os.system("shutdown /s /t 1")
 
 
 if __name__ == "__main__":
