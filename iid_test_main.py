@@ -135,6 +135,7 @@ def test_albedo(device, opts):
     global_config.albedo_network_version = opts.network_version
     global_config.a_iteration = opts.iteration
     global_config.test_size = 64
+    global_config.num_test_workers = 2
 
     tester = paired_tester.PairedTester(device, global_config.albedo_network_version, global_config.a_iteration)
 
@@ -164,12 +165,13 @@ def test_albedo(device, opts):
     pbar.update(current_progress)
 
     print("============MEASURING ON TRAIN DATASET=================")
-    for i, (_, rgb_ns, albedo) in enumerate(test_loader_input):
+    for i, (file_names, rgb_ns, albedo) in enumerate(test_loader_input):
         rgb_ns = rgb_ns.to(device)
         albedo = albedo.to(device)
 
         input_map = {"rgb_test" : rgb_ns, "albedo_test" : albedo}
         tester.measure_and_store(input_map, "rgb_test", "albedo_test")
+        tester.save_image_set(file_names, input_map, "rgb_test", "albedo_test", "Train")
 
         if(i % 50 == 0 and global_config.img_vis_enabled == 1):
             tester.visualize_results(input_map, "rgb_test", "albedo_test", "Train")
@@ -188,12 +190,13 @@ def test_albedo(device, opts):
     pbar = tqdm(total=needed_progress, disable=global_config.disable_progress_bar)
     pbar.update(current_progress)
 
-    for i, (_, rgb_ns, albedo) in enumerate(test_loader_gta):
+    for i, (file_names, rgb_ns, albedo) in enumerate(test_loader_gta):
         rgb_ns = rgb_ns.to(device)
         albedo = albedo.to(device)
 
         input_map = {"rgb_test": rgb_ns, "albedo_test": albedo}
         tester.measure_and_store(input_map, "rgb_test", "albedo_test")
+        tester.save_image_set(file_names, input_map, "rgb_test", "albedo_test", "GTA-IID")
         if (i % 50 == 0 and global_config.img_vis_enabled == 1):
             tester.visualize_results(input_map, "rgb_test", "albedo_test", "GTA-IID")
 
@@ -211,12 +214,13 @@ def test_albedo(device, opts):
     pbar = tqdm(total=needed_progress, disable=global_config.disable_progress_bar)
     pbar.update(current_progress)
 
-    for i, (_, rgb_ns, albedo, mask) in enumerate(test_loader):
+    for i, (file_names, rgb_ns, albedo, mask) in enumerate(test_loader):
         rgb_ns = rgb_ns.to(device)
         albedo = albedo.to(device)
 
         input_map = {"rgb_test": rgb_ns, "albedo_test": albedo}
         tester.measure_and_store(input_map, "rgb_test", "albedo_test")
+        tester.save_image_set(file_names, input_map, "rgb_test", "albedo_test", "CGI")
         if (i % 50 == 0 and global_config.img_vis_enabled == 1):
             tester.visualize_results(input_map, "rgb_test", "albedo_test", "CGI")
 
