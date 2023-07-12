@@ -273,13 +273,13 @@ def test_normal(device, opts):
     pbar.update(current_progress)
 
     print("============MEASURING ON TRAIN DATASET=================")
-    for i, (_, rgb_ns, target) in enumerate(test_loader_input):
+    for i, (file_names, rgb_ns, target) in enumerate(test_loader_input):
         rgb_ns = rgb_ns.to(device)
         target = target.to(device)
 
         input_map = {"rgb_test" : rgb_ns, "target_test" : target}
         tester.measure_and_store(input_map, "rgb_test", "target_test")
-
+        tester.save_image_set(file_names, input_map, "rgb_test", "target_test", "Train-Normal")
         if(i % 50 == 0 and global_config.img_vis_enabled == 1):
             tester.visualize_results(input_map, "rgb_test", "target_test", "Train-Normal")
 

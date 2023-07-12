@@ -23,7 +23,11 @@ def main(argv):
     # gdown.download_folder(url, output=output_dir, use_cookies=False)
 
     # v07_iid_base
-    url = "https://drive.google.com/drive/folders/1mGu-BYkBTTZKx52Es3u8ztgIjA8KiiSU?usp=sharing"
+    # url = "https://drive.google.com/drive/folders/1mGu-BYkBTTZKx52Es3u8ztgIjA8KiiSU?usp=sharing"
+    # gdown.download_folder(url, output=output_dir, use_cookies=False)
+
+    # v08_iid_base
+    url = "https://drive.google.com/drive/folders/169cClkYM17BSGRWsvv4U8UFfiIMGuh5r?usp=sharing"
     gdown.download_folder(url, output=output_dir, use_cookies=False)
 
     #
