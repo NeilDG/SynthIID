@@ -63,8 +63,8 @@ def test_normal():
     # os.system("python \"iid_test_main.py\" --server_config=5 --img_to_load=1000 --test_mode=\"normal\" "
     #           "--img_vis_enabled=0 --network_version=\"rgb2normal_v01.05_iid\" --iteration=1")
 
-    os.system("python \"iid_test_main.py\" --server_config=5 --img_to_load=1000 --test_mode=\"normal\" "
-              "--img_vis_enabled=0 --network_version=\"rgb2normal_v01.06_iid\" --iteration=1")
+    # os.system("python \"iid_test_main.py\" --server_config=5 --img_to_load=1000 --test_mode=\"normal\" "
+    #           "--img_vis_enabled=0 --network_version=\"rgb2normal_v01.06_iid\" --iteration=1")
 
     os.system("python \"iid_test_main.py\" --server_config=5 --img_to_load=1000 --test_mode=\"normal\" "
               "--img_vis_enabled=0 --network_version=\"rgb2normal_v01.07_iid\" --iteration=1")
@@ -78,8 +78,8 @@ def main():
     # test_albedo()
     # plot_test()
 
-    train_normal()
-    # test_normal()
+    # train_normal()
+    test_normal()
     # train_img2img()
     # os.system("shutdown /s /t 1")
 
