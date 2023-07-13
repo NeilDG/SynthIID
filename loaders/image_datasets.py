@@ -42,16 +42,20 @@ class PairedImageDataset(data.Dataset):
                 transforms.RandomCrop(self.patch_size),
                 transforms.RandomHorizontalFlip(0.5),
                 transforms.RandomVerticalFlip(0.5),
-                transforms.ToTensor()
+                # transforms.ToTensor()
             ])
         else:
             self.initial_op = transforms.Compose([
                 transforms.ToPILImage(),
                 transforms.Resize((256, 256), antialias=True),
-                transforms.ToTensor()
+                # transforms.ToTensor()
             ])
 
+        self.tensor_op = transforms.ToTensor()
         self.norm_op = transforms.Normalize((0.5, ), (0.5, ))
+
+        self.augmix_op = transforms.AugMix(chain_depth=3)
+        self.color_jitter_op = transforms.ColorJitter(0.5, 0.5, 0.25, 0.25)
 
     def __getitem__(self, idx):
         file_name = self.b_list[idx % len(self.b_list)].split("\\")[-1].split(".")[0]
@@ -65,6 +69,17 @@ class PairedImageDataset(data.Dataset):
         b_img = cv2.cvtColor(b_img, cv2.COLOR_BGR2RGB)
         torch.set_rng_state(state)
         b_img = self.initial_op(b_img)
+
+        if("color_jitter" in self.augment_mode):
+            a_img = self.color_jitter_op(a_img)
+            b_img = self.color_jitter_op(b_img)
+
+        if("augmix" in self.augment_mode):
+            a_img = self.augmix_op(a_img)
+            b_img = self.augmix_op(b_img)
+
+        a_img = self.tensor_op(a_img)
+        b_img = self.tensor_op(b_img)
 
         if(self.use_tanh):
             a_img = self.norm_op(a_img)

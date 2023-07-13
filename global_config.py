@@ -35,7 +35,7 @@ albedo_dir = ""
 depth_dir = ""
 shading_dir = ""
 normal_dir = ""
-cg_intrinsics_dir = "X:/CGIntrinsics/rendered/"
+cg_intrinsics_dir = "X:/CGIntrinsics_Test/"
 
 depth_network_version = "VXX.XX"
 d_iteration = -1

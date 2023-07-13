@@ -80,8 +80,7 @@ def update_config(opts):
         global_config.depth_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/shading/*.*"
         global_config.normal_dir = "X:/Datasets/SynthV3_Raw/{dataset_version}/normal/*.*"
-
-        global_config.cg_intrinsics_dir = "X:/Datasets/CGIntrinsics/rendered/"
+        global_config.cg_intrinsics_dir = "X:/CGIntrinsics_Test/"
 
         print("Using HOME RTX2080Ti configuration. Workers: ", global_config.num_workers)
 
@@ -125,7 +124,7 @@ def update_config(opts):
         global_config.depth_dir = "X:/SynthV3_Raw/{dataset_version}/depth/*.*"
         global_config.shading_dir = "X:/SynthV3_Raw/{dataset_version}/shading/*.*"
         global_config.normal_dir = "X:/SynthV3_Raw/{dataset_version}/normal/*.*"
-        global_config.cg_intrinsics_dir = "X:/CGIntrinsics/rendered/"
+        global_config.cg_intrinsics_dir = "X:/CGIntrinsics_Test/"
         print("Using HOME RTX3090 configuration. Workers: ", global_config.num_workers)
 
 def prepare_training():
@@ -178,7 +177,10 @@ def train_albedo(device, opts):
 
     train_loader, dataset_count = dataset_loader.load_paired_train_dataset(global_config.rgb_dir_ws, global_config.albedo_dir)
     # test_loader, _ = dataset_loader.load_paired_test_dataset(gta_rgb_path, gta_albedo_path)
-    # test_loader, _ = dataset_loader.load_cgintrinsics_test_dataset()
+    test_loader, _ = dataset_loader.load_cgintrinsics_test_dataset()
+
+    #only load first data as test set
+    _, rgb_ns_test, albedo_test, _ = next(iter(test_loader))
 
     # compute total progress
     max_epochs = network_config["max_epochs"]
@@ -192,11 +194,7 @@ def train_albedo(device, opts):
             rgb_ns = rgb_ns.to(device)
             albedo = albedo.to(device)
 
-            # _, rgb_ns_test, albedo_test, _ = next(itertools.cycle(test_loader))
-            #TODO: Temporary albedo test reference
-            rgb_ns_test = rgb_ns
-            albedo_test = albedo
-
+            _, rgb_ns_test, albedo_test, _ = next(itertools.cycle(test_loader))
             rgb_ns_test = rgb_ns_test.to(device)
             albedo_test = albedo_test.to(device)
 
