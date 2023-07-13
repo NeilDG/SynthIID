@@ -178,7 +178,7 @@ def train_albedo(device, opts):
 
     train_loader, dataset_count = dataset_loader.load_paired_train_dataset(global_config.rgb_dir_ws, global_config.albedo_dir)
     # test_loader, _ = dataset_loader.load_paired_test_dataset(gta_rgb_path, gta_albedo_path)
-    test_loader, _ = dataset_loader.load_cgintrinsics_test_dataset()
+    # test_loader, _ = dataset_loader.load_cgintrinsics_test_dataset()
 
     # compute total progress
     max_epochs = network_config["max_epochs"]
@@ -188,12 +188,15 @@ def train_albedo(device, opts):
     pbar.update(current_progress)
 
     for epoch in range(start_epoch, network_config["max_epochs"]):
-        for i, (train_data, test_data) in enumerate(zip(train_loader, itertools.cycle(test_loader))):
-            _, rgb_ns, albedo = train_data
+        for i, (_, rgb_ns, albedo) in enumerate(train_loader, 0):
             rgb_ns = rgb_ns.to(device)
             albedo = albedo.to(device)
 
-            _, rgb_ns_test, albedo_test, _ = test_data
+            # _, rgb_ns_test, albedo_test, _ = next(itertools.cycle(test_loader))
+            #TODO: Temporary albedo test reference
+            rgb_ns_test = rgb_ns
+            albedo_test = albedo
+
             rgb_ns_test = rgb_ns_test.to(device)
             albedo_test = albedo_test.to(device)
 
