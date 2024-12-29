@@ -38,6 +38,8 @@ class PairedTester():
         target_like = self.trainer.test(input_map, a_key)
         target = input_map[b_key]
 
+        # target = tensor_utils.convert_unity_normals_to_surface_normals(target)
+
         if(use_tanh):
             target_like = tensor_utils.normalize_to_01(target_like)
             target = tensor_utils.normalize_to_01(target)
